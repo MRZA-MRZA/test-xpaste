@@ -1,0 +1,14 @@
+[Unit]
+Description=Xpaste app
+After=network.target
+
+[Service]
+EnvironmentFile=/etc/sysconfig/xpaste
+WorkingDirectory={{ xpaste_destdir }}
+ExecStartPre=bundle exec rake db:migrate
+ExecStart=bundle exec puma -b unix:///var/run/puma.sock -e $RAILS_ENV config.ru
+Type=simple
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

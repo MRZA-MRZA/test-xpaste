@@ -1,0 +1,7 @@
+---
+- name: "Start xpaste"
+  ansible.builtin.systemd_service:
+    name: "xpaste"
+    state: "restarted"
+    enabled: true
+    daemon_reload: true

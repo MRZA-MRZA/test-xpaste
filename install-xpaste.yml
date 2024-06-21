@@ -1,0 +1,16 @@
+---
+- name: "Install xpaste playbook"
+  hosts: "all"
+  become: true
+  vars:
+    xpaste_destdir: "/opt/xpaste"
+    xpaste_key_base: "a1c80a36-1f3c-44ab-b622-896631c4d351"
+    xpaste_db_host: "localhost"
+    xpaste_db_port: "5432"
+    xpaste_db_name: "xpaste_db"
+    xpaste_db_user: "xpaste_user"
+    xpaste_db_password: "xpastepass"
+
+  roles:
+    - "postgresql"
+    - "xpaste"
