@@ -1,21 +1,13 @@
 ---
 - name: "Install postgresql"
-  ansible.builtin.yum:
+  ansible.builtin.apt:
     name:
       - "postgresql"
-      - "postgresql-server"
+      - "postgresql-client"
       - "python3-psycopg2"
+      - "acl"
     update_cache: true
-    state: present
-
-- name: "Is postgresql configured"
-  ansible.builtin.stat:
-    path: "/var/lib/pgsql/data/pg_hba.conf"
-  register: postgres_conf
-
-- name: "Initialize PostgreSQL"
-  ansible.builtin.command: "/usr/bin/postgresql-setup --initdb"
-  when: not postgres_conf.stat.exists
+    state: "present"
 
 - name: "Start postgresql"
   ansible.builtin.service:
@@ -25,12 +17,12 @@
 
 - name: "Create DB"
   community.postgresql.postgresql_db:
-    name: "{{ xpaste_db_name }}"
+    name: "{{ postgresql_db_name }}"
   become_user: "postgres"
 
 - name: "Create user"
   community.postgresql.postgresql_user:
-    db: "{{ xpaste_db_name }}"
-    name: "{{ xpaste_db_user }}"
-    password: "{{ xpaste_db_password }}"
+    db: "{{ postgresql_db_name }}"
+    name: "{{ postgresql_db_user }}"
+    password: "{{ postgresql_db_password }}"
   become_user: "postgres"

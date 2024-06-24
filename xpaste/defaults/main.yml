@@ -1,2 +1,4 @@
 ---
-# defaults file for xpaste
+xpaste_destdir: "/opt/xpaste"
+xpaste_db_host: "localhost"
+xpaste_db_port: "5432"

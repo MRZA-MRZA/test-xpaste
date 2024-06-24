@@ -1,9 +1,9 @@
 [Unit]
 Description=Xpaste app
-After=network.target
+After=postgresql.target
 
 [Service]
-EnvironmentFile=/etc/sysconfig/xpaste
+EnvironmentFile=/etc/default/xpaste
 WorkingDirectory={{ xpaste_destdir }}
 ExecStartPre=bundle exec rake db:migrate
 ExecStart=bundle exec puma -b unix:///var/run/puma.sock -e $RAILS_ENV config.ru

@@ -1,75 +1,64 @@
 ---
-- name: "Install libyaml-devel"
-  ansible.builtin.dnf:
-    name: "libyaml-devel"
-    enablerepo: "devel"
-    update_cache: true
-    state: present
-
 - name: "Install dependencies"
-  ansible.builtin.dnf:
+  ansible.builtin.apt:
     name:
       - "ruby"
-      - "libxml2-devel"
+      - "libxml2-dev"
       - "git"
-      - "ruby-devel"
-      - "libxslt-devel"
-      - "postgresql-devel"
+      - "ruby-dev"
+      - "libxslt-dev"
+      - "nodejs"
+      - "libpq-dev"
     update_cache: true
-    state: present
+    state: "present"
 
-- name: "Install Development tools"
-  ansible.builtin.dnf:
-    name: '@Development tools'
-    state: present
+- name: "Install build-essential"
+  ansible.builtin.apt:
+    name: "build-essential"
+    update_cache: true
+    state: "present"
 
-- name: "Set ssh key for gitlab"
+- name: "Set ssh key for slurm gitlab"
   ansible.builtin.copy:
-    src: "{{ lookup('env','HOME') + '/.ssh/id_ed25519_slurm' }}"
-    dest: "/root/.ssh/id_ed25519_slurm"
-    owner: root
-    group: root
+    src: "{{ xpaste_ssh_privkey }}"
+    dest: "{{ xpaste_privkey_path }}"
+    owner: "root"
+    group: "root"
     mode: "0600"
 
 - name: "Get xpaste app"
   ansible.builtin.git:
     repo: "git@gitlab.slurm.io:edu/xpaste_practicum.git"
     dest: "{{ xpaste_destdir }}"
-    key_file: "/root/.ssh/id_ed25519_slurm"
+    key_file: "{{ xpaste_privkey_path }}"
     accept_hostkey: true
   notify: "Start xpaste"
 
 - name: "Install bundler"
   community.general.gem:
     name: "bundler"
-    version: 1.16.2
-    state: present
+    version: "{{ xpaste_bundler_version }}"
+    state: "present"
     user_install: false
 
-- name: "Install rake"
-  community.general.gem:
-    name: "rake"
-    version: 12.3.1
-    state: present
-    user_install: false
+- name: "Restore rake to pristine condition"
+  ansible.builtin.command: "gem pristine rake"
 
 - name: "Install pkg-config"
   community.general.gem:
     name: "pkg-config"
-    state: present
+    state: "present"
     user_install: false
 
 - name: "Install ruby dependencies"
   ansible.builtin.shell: "bundle config build.nokogiri --use-system-libraries && bundle install --clean --force --no-cache --without development"
   args:
     chdir: "{{ xpaste_destdir }}"
-  environment:
-    PATH: "{{ ansible_env.PATH }}:/usr/local/bin"
 
 - name: "Configure app"
   ansible.builtin.template:
     src: "xpaste.j2"
-    dest: "/etc/sysconfig/xpaste"
+    dest: "/etc/default/xpaste"
     mode: "0644"
   notify: "Start xpaste"
 
