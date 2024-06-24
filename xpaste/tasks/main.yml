@@ -50,6 +50,9 @@
     state: "present"
     user_install: false
 
+- name: "Restore minitest to pristine condition"
+  ansible.builtin.command: "gem pristine minitest"
+
 - name: "Install ruby dependencies"
   ansible.builtin.shell: "bundle config build.nokogiri --use-system-libraries && bundle install --clean --force --no-cache --without development"
   args:

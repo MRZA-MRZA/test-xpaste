@@ -8,9 +8,9 @@
     xpaste_db_name: "xpaste_db"
     xpaste_db_user: "xpaste_user"
     xpaste_db_password: "xpastepass"
-    postgresql_db_name: "{{ xpostgresql_db_name }}"
+    postgresql_db_name: "{{ xpaste_db_name }}"
     postgresql_db_user: "{{ xpaste_db_user }}"
-    postgresql_db_password: "{{ xxpaste_db_password }}"
+    postgresql_db_password: "{{ xpaste_db_password }}"
 
   roles:
     - "postgresql"
@@ -23,6 +23,7 @@
         src: "{{ xpaste_destdir }}/config/nginx.conf"
         dest: "/etc/nginx/nginx.conf"
         remote_src: true
+        mode: "0644"
       notify: "Restart nginx"
 
   handlers:
